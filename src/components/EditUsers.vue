@@ -21,7 +21,7 @@
                             </div>
 
                              <div class="form-group">
-                                <input type="text" v-model="user.username" name="username" placeholder="username" class="form-control">
+                                <input type="text" v-model="user.typeUN" name="username" placeholder="username" class="form-control">
                             </div>
                             
                              <div class="form-group">
@@ -71,10 +71,30 @@
    
 </template>
 <script>
+import axios from 'axios';
+
 export default {
-    name: 'EditUsers',
     data(){
+        return {
+            userId: {},
+            user: {}
         }
+    },
+    created() {
+        this.getUser(this.userId);
+    },
+    methods: {
+        getUser(id) {
+          axios.get('http://localhost:3000/users/'+id).then(response => {
+              this.user = response.data;
+          }).catch(error => console.log(error))
+      },
+        updateUser(id, user) {
+            axios.put('http://localhost:3000/users/'+id, user).then(response => {
+              this.user = response.data;
+          }).catch(error => console.log(error))
+        }
+    }
 }
 </script>
 
