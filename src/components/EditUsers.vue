@@ -89,11 +89,7 @@ export default {
               this.user = response.data;
           }).catch(error => console.log(error))
       },
-        updateUser(id, user) {
-            axios.put('http://localhost:3000/users/'+id, user).then(response => {
-              this.user = response.data;
-          }).catch(error => console.log(error))
-        }
+     
     }
 }
 </script>

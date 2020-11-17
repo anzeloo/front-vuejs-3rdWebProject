@@ -8,7 +8,7 @@
                 <div class="card" >
                     <div class="card-body">
                         <form >
-                            <h5> Add an user </h5>
+                            <h5> {{ statename }} an user </h5>
 
                             <div class="form-group">
                                 <input type="text"  v-model="firstname" name="firstname" placeholder="firstname" class="form-control" >
@@ -55,7 +55,7 @@
                               </select>
                              </div>
                           </div>
-                            <button type="button" class="btn btn-primary btn-block" @click="addUser" > Add </button> 
+                            <button type="button" class="btn btn-primary btn-block" @click="addUser" > {{ statename }} </button> 
                         </form>
                     </div>
                 </div>
@@ -97,6 +97,8 @@
 <script>
 import axios from 'axios';
 
+
+
 export default {
   name: 'Users',
   data() {
@@ -110,7 +112,11 @@ export default {
         photo: '',
         active: '',
         users:[],
-        url: 'http://localhost:3000/users'
+        url: 'http://localhost:3000/users',
+        state: true,
+        statename: 'add',
+        stateid: ''
+    
     }
   },
   created() {
@@ -133,7 +139,88 @@ export default {
             photo: this.photo,
             active: this.active==="Yes"? true : false
          }
-          axios.post(this.url, user).then( response => {
+            if(this.state){
+               
+               axios.post(this.url, user).then( response => {
+                    if (response.status == 200) {
+                          this.firstname= ''; 
+                          this.lastname= '';
+                          this.username= '';
+                          this.type= '';
+                          this.number= '';
+                          this.password= '';
+                          this.photo= '';
+                          this.active= '';
+                          this.getUsers();
+                    }
+                }
+                ).catch(error => console.log(error))
+
+            }
+         else{
+             this.updateUser(this.stateid);
+         }
+
+      },
+
+      deleteUser(id) {
+          axios.delete(this.url+"/"+id).then(response => {
+              if (response.status == 200) {
+                  console.log("Usuario eliminado");
+                  this.getUsers();
+              }
+          }).catch(error => console.log(error))
+      },
+
+     editUser(id) {
+          axios.get(this.url+"/"+id).then(response => {
+              if (response.status == 200) {
+                  console.log(response.data);
+                  this.firstname = response.data.name.firstname;
+                  this.lastname = response.data.name.lastname;
+
+                  this.username = response.data.username.type;
+                  this.password = response.data.password;
+                  this.type = response.data.identification.type;
+                  this.number = response.data.identification.number;
+                  this.photo = response.data.photo;
+                  this.active = response.data.active ? 'Yes' : 'No';
+
+                  this.state = false;
+                  this.statename = 'edit';
+                  this.stateid = id;
+
+
+
+                  
+                  console.log(this.firstname);
+              }
+          }).catch(error => console.log(error))
+      }
+,
+
+     updateUser(id){
+            let userupdated = {  
+     
+            name: {
+                firstname: this.firstname, 
+                lastname: this.lastname
+            },
+            username: {
+                type: this.username
+            },
+            identification: {
+                type: this.type,
+                number: this.number
+            },
+            password: this.password,
+            photo: this.photo,
+            active: this.active==="Yes"? true : false
+         }
+         console.log(id);
+    console.log(userupdated);
+         
+            axios.put(this.url+"/"+id, userupdated).then( response => {
               if (response.status == 200) {
                     this.firstname= ''; 
                     this.lastname= '';
@@ -143,23 +230,21 @@ export default {
                     this.password= '';
                     this.photo= '';
                     this.active= '';
+                    
                     this.getUsers();
+                    this.stateid = '';
+                    this.statename = 'add';
+                    this.state = true;
+
               }
           }
           ).catch(error => console.log(error))
-      },
-      deleteUser(id) {
-          axios.delete(this.url+"/"+id).then(response => {
-              if (response.status == 200) {
-                  console.log("Usuario eliminado");
-                  this.getUsers();
-              }
-          }).catch(error => console.log(error))
-      },
-      editUser(id) {
-          console.log(id);
-          this.$router.push({ params: { userId: id } }) 
-      }
+            
+
+      } 
+      
+        
+
   }
 }
 </script>
