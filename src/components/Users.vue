@@ -56,6 +56,14 @@
                              </div>
                           </div>
                             <button type="button" class="btn btn-primary btn-block" @click="addUser" > {{ statename }} </button> 
+                           <div class="form-group">
+                           <div v-if="statecancel === true">
+                            <button type="button" class="btn btn-danger btn-block" disabled> cancel </button> 
+                           </div>
+                           <div v-else>
+                               <button type="button" class="btn btn-danger btn-block" @click="cancelEdit"> cancel </button>
+                           </div>
+                           </div>
                         </form>
                     </div>
                 </div>
@@ -115,7 +123,8 @@ export default {
         url: 'http://localhost:3000/users',
         state: true,
         statename: 'add',
-        stateid: ''
+        stateid: '',
+        statecancel: true
     
     }
   },
@@ -186,6 +195,7 @@ export default {
                   this.photo = response.data.photo;
                   this.active = response.data.active ? 'Yes' : 'No';
 
+                  this.statecancel = false;
                   this.state = false;
                   this.statename = 'edit';
                   this.stateid = id;
@@ -235,13 +245,32 @@ export default {
                     this.stateid = '';
                     this.statename = 'add';
                     this.state = true;
+                    this.statecancel = true;
 
               }
           }
           ).catch(error => console.log(error))
-            
 
-      } 
+         alert("The user has been updated successfully!");
+
+      } ,
+
+      cancelEdit(){
+                    this.firstname= ''; 
+                    this.lastname= '';
+                    this.username= '';
+                    this.type= '';
+                    this.number= '';
+                    this.password= '';
+                    this.photo= '';
+                    this.active= '';    
+
+                    this.statecancel = true;
+                    this.statename = 'add';
+                    this.state = true;
+                    this.stateid = '';
+
+      }
       
         
 
